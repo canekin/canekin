@@ -279,7 +279,7 @@ def render_stats_svg(stats: dict) -> str:
         ("last push", stats["last_push"], "#f472b6"),
     ]
     lines = []
-    y = 110
+    y = 94
     for label, value, color in rows:
         lines.append(
             f'<text x="28" y="{y}" fill="#9ca3af" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14">'
@@ -318,7 +318,7 @@ def render_stats_svg(stats: dict) -> str:
 def render_languages_svg(langs: list[tuple[str, int]]) -> str:
     total = sum(v for _, v in langs) or 1
     palette = ["#22c55e", "#60a5fa", "#fbbf24", "#f472b6", "#a78bfa", "#34d399", "#fb7185", "#38bdf8"]
-    bar_x, bar_y, bar_w, bar_h = 28, 70, 464, 14
+    bar_x, bar_y, bar_w, bar_h = 28, 90, 464, 14
     parts = []
     x = bar_x
     for i, (name, value) in enumerate(langs):
@@ -352,8 +352,12 @@ def render_languages_svg(langs: list[tuple[str, int]]) -> str:
     <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#0a0a0a"/><stop offset="100%" stop-color="#111827"/>
     </linearGradient>
+    <pattern id="grid2" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1f2937" stroke-width="1" opacity="0.45"/>
+    </pattern>
   </defs>
   <rect width="{CARD_WIDTH}" height="{height}" rx="12" fill="url(#bg2)"/>
+  <rect width="{CARD_WIDTH}" height="{height}" rx="12" fill="url(#grid2)"/>
   <rect x="1" y="1" width="{CARD_WIDTH - 2}" height="{height - 2}" rx="11" fill="none" stroke="#22c55e" stroke-opacity="0.35"/>
   <circle cx="28" cy="28" r="6" fill="#FF605C"/><circle cx="48" cy="28" r="6" fill="#FFBD44"/><circle cx="68" cy="28" r="6" fill="#00CA4E"/>
   <text x="92" y="33" fill="#9ca3af" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12">canekin/CanXer</text>
