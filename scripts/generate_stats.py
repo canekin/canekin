@@ -30,6 +30,11 @@ STATS_SVG = OUT_DIR / "stats.svg"
 LANGS_SVG = OUT_DIR / "languages.svg"
 CONTRIB_SVG = OUT_DIR / "contributions.svg"
 
+# Shared card height so stats.svg and languages.svg render symmetrically
+# side-by-side in the README, regardless of row count.
+CARD_HEIGHT = 320
+CARD_WIDTH = 520
+
 LEVEL_COLORS = {
     "NONE": "#161b22",
     "FIRST_QUARTILE": "#0e4429",
@@ -48,6 +53,26 @@ def esc(text: object) -> str:
         .replace(">", "&gt;")
         .replace('"', "&quot;")
     )
+
+
+def humanize_delta(iso_ts: str | None) -> str:
+    """Turn an ISO8601 UTC timestamp into a short relative label like '2d ago'."""
+    if not iso_ts:
+        return "n/a"
+    try:
+        dt = datetime.strptime(iso_ts, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+    except ValueError:
+        return "n/a"
+    secs = (datetime.now(timezone.utc) - dt).total_seconds()
+    if secs < 0:
+        secs = 0
+    if secs < 3600:
+        return f"{max(1, int(secs // 60))}m ago"
+    if secs < 86400:
+        return f"{int(secs // 3600)}h ago"
+    if secs < 86400 * 30:
+        return f"{int(secs // 86400)}d ago"
+    return dt.strftime("%Y-%m-%d")
 
 
 def api_get(url: str) -> dict | list:
@@ -140,6 +165,12 @@ def compute_stats(user: dict, repos: list[dict], private_known: bool) -> dict:
         public = max(public, int(user.get("public_repos") or 0))
         private = 0
     stars = sum(int(r.get("stargazers_count") or 0) for r in repos)
+
+    last_pushed = max(
+        (r.get("pushed_at") for r in repos if r.get("pushed_at")),
+        default=None,
+    )
+
     return {
         "public_repos": public,
         "private_repos": private,
@@ -148,6 +179,7 @@ def compute_stats(user: dict, repos: list[dict], private_known: bool) -> dict:
         "stars": stars,
         "followers": int(user.get("followers") or 0),
         "following": int(user.get("following") or 0),
+        "last_commit": humanize_delta(last_pushed),
         "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
     }
 
@@ -234,6 +266,7 @@ def render_stats_svg(stats: dict) -> str:
         ("total repos", total, "#ededed"),
         ("stars", str(stats["stars"]), "#fbbf24"),
         ("followers", str(stats["followers"]), "#60a5fa"),
+        ("last commit", stats["last_commit"], "#f472b6"),
     ]
     lines = []
     y = 78
@@ -245,11 +278,12 @@ def render_stats_svg(stats: dict) -> str:
         )
         y += 28
     hint = (
-        "private counts live · token ok"
+        "keep going!"
         if stats["private_known"]
         else "add PROFILE_TOKEN secret for private counts"
     )
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="520" height="250" viewBox="0 0 520 250" role="img" aria-label="GitHub stats for {esc(USERNAME)}">
+    height = CARD_HEIGHT
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{CARD_WIDTH}" height="{height}" viewBox="0 0 {CARD_WIDTH} {height}" role="img" aria-label="GitHub stats for {esc(USERNAME)}">
   <title>{esc(USERNAME)} GitHub stats</title>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
@@ -259,14 +293,14 @@ def render_stats_svg(stats: dict) -> str:
       <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1f2937" stroke-width="1" opacity="0.45"/>
     </pattern>
   </defs>
-  <rect width="520" height="250" rx="12" fill="url(#bg)"/>
-  <rect width="520" height="250" rx="12" fill="url(#grid)"/>
-  <rect x="1" y="1" width="518" height="248" rx="11" fill="none" stroke="#22c55e" stroke-opacity="0.35"/>
+  <rect width="{CARD_WIDTH}" height="{height}" rx="12" fill="url(#bg)"/>
+  <rect width="{CARD_WIDTH}" height="{height}" rx="12" fill="url(#grid)"/>
+  <rect x="1" y="1" width="{CARD_WIDTH - 2}" height="{height - 2}" rx="11" fill="none" stroke="#22c55e" stroke-opacity="0.35"/>
   <circle cx="28" cy="28" r="6" fill="#FF605C"/><circle cx="48" cy="28" r="6" fill="#FFBD44"/><circle cx="68" cy="28" r="6" fill="#00CA4E"/>
   <text x="92" y="33" fill="#9ca3af" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12">{esc(USERNAME)}@github:~/stats</text>
   <text x="28" y="58" fill="#22c55e" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13">{esc(USERNAME)}@ekin:~$ ./gh_stats</text>
   {"".join(lines)}
-  <text x="28" y="230" fill="#6b7280" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11">updated {esc(stats["updated"])} · {esc(hint)}</text>
+  <text x="28" y="{height - 20}" fill="#6b7280" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11">updated {esc(stats["updated"])} · {esc(hint)}</text>
 </svg>
 '''
 
@@ -284,8 +318,14 @@ def render_languages_svg(langs: list[tuple[str, int]]) -> str:
         parts.append(f'<rect x="{x}" y="{bar_y}" width="{w}" height="{bar_h}" fill="{palette[i % len(palette)]}"/>')
         x += w
 
+    height = CARD_HEIGHT
+    # Rows fill the space between the bar and the footer line, spaced evenly
+    # so 1 language and 8 languages both look intentional inside the fixed card.
+    row_start, row_end = 100, height - 40
+    row_step = max(20, (row_end - row_start) // max(1, len(langs)))
+
     rows = []
-    y = 110
+    y = row_start
     for i, (name, value) in enumerate(langs):
         pct = value * 100 / total
         col = palette[i % len(palette)]
@@ -294,23 +334,23 @@ def render_languages_svg(langs: list[tuple[str, int]]) -> str:
             f'<text x="48" y="{y}" fill="#ededed" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13">{esc(name)}</text>'
             f'<text x="460" y="{y}" fill="#9ca3af" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13" text-anchor="end">{pct:.1f}%</text>'
         )
-        y += 22
+        y += row_step
 
-    height = max(250, y + 20)
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="520" height="{height}" viewBox="0 0 520 {height}" role="img" aria-label="Top languages for {esc(USERNAME)}">
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{CARD_WIDTH}" height="{height}" viewBox="0 0 {CARD_WIDTH} {height}" role="img" aria-label="Top languages for {esc(USERNAME)}">
   <title>{esc(USERNAME)} top languages</title>
   <defs>
     <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#0a0a0a"/><stop offset="100%" stop-color="#111827"/>
     </linearGradient>
   </defs>
-  <rect width="520" height="{height}" rx="12" fill="url(#bg2)"/>
-  <rect x="1" y="1" width="518" height="{height - 2}" rx="11" fill="none" stroke="#22c55e" stroke-opacity="0.35"/>
+  <rect width="{CARD_WIDTH}" height="{height}" rx="12" fill="url(#bg2)"/>
+  <rect x="1" y="1" width="{CARD_WIDTH - 2}" height="{height - 2}" rx="11" fill="none" stroke="#22c55e" stroke-opacity="0.35"/>
   <circle cx="28" cy="28" r="6" fill="#FF605C"/><circle cx="48" cy="28" r="6" fill="#FFBD44"/><circle cx="68" cy="28" r="6" fill="#00CA4E"/>
   <text x="92" y="33" fill="#9ca3af" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12">{esc(USERNAME)}@github:~/languages</text>
   <text x="28" y="58" fill="#22c55e" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13">{esc(USERNAME)}@ekin:~$ top_langs</text>
   {"".join(parts)}
   {"".join(rows)}
+  <text x="28" y="{height - 20}" fill="#6b7280" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11">detected via GitHub API · top {len(langs)} by bytes</text>
 </svg>
 '''
 
@@ -418,6 +458,7 @@ def patch_readme(stats: dict, total_contrib: int | None) -> None:
 | Total (owned, non-fork) | **{total}** |
 | Stars | **{stats['stars']}** |
 | Followers | **{stats['followers']}** |
+| Last commit | **{stats['last_commit']}** |
 
 <sub>Auto-refreshed by GitHub Actions · last run: {stats['updated']}</sub>
 <!-- END_REPO_STATS -->"""
