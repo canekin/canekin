@@ -95,26 +95,75 @@ def extract_inner_markup(svg: str) -> str:
     return svg[start + 1 : end]
 
 
-def peak_label_from_weeks(weeks: list) -> str | None:
-    by_month: dict[str, int] = defaultdict(int)
+def iter_days(weeks: list):
     for week in weeks:
         for day in week.get("contributionDays") or []:
-            by_month[day["date"][:7]] += int(day.get("contributionCount") or 0)
+            yield day
+
+
+def total_from_weeks(weeks: list) -> int:
+    return sum(int(d.get("contributionCount") or 0) for d in iter_days(weeks))
+
+
+def date_range_from_weeks(weeks: list) -> tuple[datetime, datetime] | None:
+    dates: list[datetime] = []
+    for day in iter_days(weeks):
+        raw = day.get("date")
+        if not raw:
+            continue
+        dates.append(datetime.strptime(raw[:10], "%Y-%m-%d"))
+    if not dates:
+        return None
+    return min(dates), max(dates)
+
+
+def period_phrase(weeks: list) -> str:
+    """Describe the on-screen calendar span (not a static 'last year')."""
+    span = date_range_from_weeks(weeks)
+    if not span:
+        return "in this period"
+    start, end = span
+    now_year = datetime.now(timezone.utc).year
+    if start.year == end.year:
+        if start.year == now_year:
+            return "in this year"
+        return f"in {start.year}"
+    # Cross-year grid (typical rolling contribution calendar)
+    return f"in {start.strftime('%b %Y')} – {end.strftime('%b %Y')}"
+
+
+def left_label_from_weeks(weeks: list, total: int | None = None) -> str:
+    n = total if total is not None else total_from_weeks(weeks)
+    return f"{n} contributions {period_phrase(weeks)}"
+
+
+def peak_label_from_weeks(weeks: list) -> str | None:
+    by_month: dict[str, int] = defaultdict(int)
+    for day in iter_days(weeks):
+        by_month[day["date"][:7]] += int(day.get("contributionCount") or 0)
     if not by_month:
         return None
     best = max(by_month.items(), key=lambda x: x[1])[0]
-    peak = datetime.strptime(best + "-01", "%Y-%m-%d").strftime("%b %Y")
+    # Full month name only on the peak badge (grid month row stays abbreviated).
+    peak = datetime.strptime(best + "-01", "%Y-%m-%d").strftime("%B %Y")
     return f"peak {peak}"
 
 
 def normalize_peak(text: str | None) -> str | None:
-    """Keep only a real 'peak Mon YYYY' label; drop private/public fluff."""
+    """Keep only a real peak month label; expand abbreviated months to full names."""
     if not text:
         return None
-    m = re.search(r"peak\s+([A-Za-z]{3}\s+\d{4})", text, flags=re.I)
+    m = re.search(r"peak\s+([A-Za-z]+)\s+(\d{4})", text, flags=re.I)
     if not m:
         return None
-    return f"peak {m.group(1)}"
+    month_tok, year = m.group(1), m.group(2)
+    for fmt in ("%B", "%b"):
+        try:
+            month = datetime.strptime(month_tok, fmt).strftime("%B")
+            return f"peak {month} {year}"
+        except ValueError:
+            continue
+    return None
 
 
 def weeks_from_contributions_svg() -> list | None:
@@ -129,7 +178,7 @@ def weeks_from_contributions_svg() -> list | None:
         return None
     # Group into Sunday-start weeks as GitHub does (7 consecutive days).
     days = [{"date": d, "contributionCount": int(c)} for d, c in dates]
-    weeks: list[list[dict]] = []
+    weeks: list[dict] = []
     for i in range(0, len(days), 7):
         chunk = days[i : i + 7]
         if chunk:
@@ -138,18 +187,18 @@ def weeks_from_contributions_svg() -> list | None:
 
 
 def meta_from_contributions_svg() -> FrameMeta | None:
-    if not CONTRIB_SVG.exists():
+    weeks = weeks_from_contributions_svg()
+    if not weeks:
         return None
     text = CONTRIB_SVG.read_text(encoding="utf-8")
-    title = re.search(r"<title>([^<]+)</title>", text)
-    if not title:
-        return None
     right_raw = re.search(r'text-anchor="end">([^<]+)</text>', text)
-    weeks = weeks_from_contributions_svg() or []
+    # Prefer summing the days on the card so the count matches the grid.
+    title_total = re.search(r"<title>(\d+)\s+contributions", text)
+    total = int(title_total.group(1)) if title_total else total_from_weeks(weeks)
     peak = normalize_peak(right_raw.group(1) if right_raw else None) or peak_label_from_weeks(
         weeks
     )
-    return FrameMeta(left=title.group(1).strip(), peak=peak, weeks=weeks)
+    return FrameMeta(left=left_label_from_weeks(weeks, total=total), peak=peak, weeks=weeks)
 
 
 def meta_from_api() -> FrameMeta | None:
@@ -202,7 +251,7 @@ def meta_from_api() -> FrameMeta | None:
     total = int(cal.get("totalContributions") or 0)
     weeks = cal.get("weeks") or []
     return FrameMeta(
-        left=f"{total} contributions in the last year",
+        left=left_label_from_weeks(weeks, total=total),
         peak=peak_label_from_weeks(weeks),
         weeks=weeks,
     )
@@ -210,7 +259,7 @@ def meta_from_api() -> FrameMeta | None:
 
 def resolve_meta() -> FrameMeta:
     return meta_from_api() or meta_from_contributions_svg() or FrameMeta(
-        left="contribution snake · last year",
+        left="contribution snake",
         peak=None,
         weeks=[],
     )

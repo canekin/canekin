@@ -42,7 +42,7 @@ Currently : Bahçeşehir University · building cool stuff & open for opportunit
 
 ### `git log --graph` — contributions
 
-GitHub-style contribution snake for the last year (private commits included when enabled). Peak month is called out on the card; empty cells stay dark.
+GitHub-style contribution snake.
 
 <p align="center">
   <img src="./generated/github-snake-dark.svg" alt="Contribution snake animation" />

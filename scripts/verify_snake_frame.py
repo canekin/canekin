@@ -25,10 +25,12 @@ def main() -> None:
         "card bg": 'fill="#0a0a0a"' in s,
         "card border": 'stroke="#21262d"' in s,
         "rounded card": 'rx="12"' in s,
-        "header left": "contributions in the last year" in s
+        "header left": re.search(r"\d+ contributions in ", s) is not None
         or "contribution snake" in s,
+        "no last year phrase": "in the last year" not in s,
         "peak only": (
-            re.search(r">peak [A-Za-z]{3} \d{4}</text>", s) is not None
+            re.search(r">peak (January|February|March|April|May|June|July|August|September|October|November|December) \d{4}</text>", s)
+            is not None
             and "public + private" not in s
         ),
         "month labels": 'data-month-labels="1"' in s,
