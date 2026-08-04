@@ -39,7 +39,7 @@
 
 ### `git log --graph` — contributions
 
-GitHub-style contribution snake.
+Contribution snakee!!
 
 <p align="center">
   <img src="./generated/github-snake-dark.svg" alt="Contribution snake animation" />
@@ -49,7 +49,7 @@ GitHub-style contribution snake.
 
 ### `ls ~/projects --sort=pushed` — recently shipping
 
-Live list of the **5 repos with the newest commits** (profile repo excluded). Refreshed by Actions.
+Live list of the **5 repos with the newest commits**
 
 <p align="center">
   <img src="./generated/projects.svg" alt="Recently pushed projects" width="100%" />
