@@ -166,10 +166,20 @@ def compute_stats(user: dict, repos: list[dict], private_known: bool) -> dict:
         private = 0
     stars = sum(int(r.get("stargazers_count") or 0) for r in repos)
 
-    last_pushed = max(
-        (r.get("pushed_at") for r in repos if r.get("pushed_at")),
-        default=None,
-    )
+    # Exclude the profile repo itself so "last push" reflects real project work
+    project_repos = [
+        r for r in repos
+        if r.get("pushed_at") and r.get("name", "").lower() != USERNAME.lower()
+    ]
+    if project_repos:
+        last_repo = max(project_repos, key=lambda r: r["pushed_at"])
+        last_push_label = f"{last_repo['name']} \u00b7 {humanize_delta(last_repo['pushed_at'])}"
+    else:
+        last_pushed = max(
+            (r.get("pushed_at") for r in repos if r.get("pushed_at")),
+            default=None,
+        )
+        last_push_label = humanize_delta(last_pushed)
 
     return {
         "public_repos": public,
@@ -179,7 +189,7 @@ def compute_stats(user: dict, repos: list[dict], private_known: bool) -> dict:
         "stars": stars,
         "followers": int(user.get("followers") or 0),
         "following": int(user.get("following") or 0),
-        "last_commit": humanize_delta(last_pushed),
+        "last_push": last_push_label,
         "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
     }
 
@@ -266,7 +276,7 @@ def render_stats_svg(stats: dict) -> str:
         ("total repos", total, "#ededed"),
         ("stars", str(stats["stars"]), "#fbbf24"),
         ("followers", str(stats["followers"]), "#60a5fa"),
-        ("last commit", stats["last_commit"], "#f472b6"),
+        ("last push", stats["last_push"], "#f472b6"),
     ]
     lines = []
     y = 110
@@ -278,7 +288,7 @@ def render_stats_svg(stats: dict) -> str:
         )
         y += 28
     hint = (
-        "keep going!"
+        "live"
         if stats["private_known"]
         else "add PROFILE_TOKEN secret for private counts"
     )
@@ -297,8 +307,8 @@ def render_stats_svg(stats: dict) -> str:
   <rect width="{CARD_WIDTH}" height="{height}" rx="12" fill="url(#grid)"/>
   <rect x="1" y="1" width="{CARD_WIDTH - 2}" height="{height - 2}" rx="11" fill="none" stroke="#22c55e" stroke-opacity="0.35"/>
   <circle cx="28" cy="28" r="6" fill="#FF605C"/><circle cx="48" cy="28" r="6" fill="#FFBD44"/><circle cx="68" cy="28" r="6" fill="#00CA4E"/>
-  <text x="92" y="33" fill="#9ca3af" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12">{esc(USERNAME)}@github:~/stats</text>
-  <text x="28" y="58" fill="#22c55e" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13">{esc(USERNAME)}@ekin:~$ ./gh_stats</text>
+  <text x="92" y="33" fill="#9ca3af" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12">{esc(USERNAME)}/CanXer</text>
+  <text x="28" y="58" fill="#22c55e" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13">{esc(USERNAME)}@github:~$ ./gh_stats</text>
   {"".join(lines)}
   <text x="28" y="{height - 20}" fill="#6b7280" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11">updated {esc(stats["updated"])} · {esc(hint)}</text>
 </svg>
@@ -346,8 +356,8 @@ def render_languages_svg(langs: list[tuple[str, int]]) -> str:
   <rect width="{CARD_WIDTH}" height="{height}" rx="12" fill="url(#bg2)"/>
   <rect x="1" y="1" width="{CARD_WIDTH - 2}" height="{height - 2}" rx="11" fill="none" stroke="#22c55e" stroke-opacity="0.35"/>
   <circle cx="28" cy="28" r="6" fill="#FF605C"/><circle cx="48" cy="28" r="6" fill="#FFBD44"/><circle cx="68" cy="28" r="6" fill="#00CA4E"/>
-  <text x="92" y="33" fill="#9ca3af" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12">{esc(USERNAME)}@github:~/languages</text>
-  <text x="28" y="58" fill="#22c55e" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13">{esc(USERNAME)}@ekin:~$ top_langs</text>
+  <text x="92" y="33" fill="#9ca3af" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12">{esc(USERNAME)}/CanXer:~/languages</text>
+  <text x="28" y="58" fill="#22c55e" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13">{esc(USERNAME)}@github:~$ top_langs</text>
   {"".join(parts)}
   {"".join(rows)}
   <text x="28" y="{height - 20}" fill="#6b7280" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11">detected via GitHub API · top {len(langs)} by bytes</text>
@@ -458,7 +468,7 @@ def patch_readme(stats: dict, total_contrib: int | None) -> None:
 | Total (owned, non-fork) | **{total}** |
 | Stars | **{stats['stars']}** |
 | Followers | **{stats['followers']}** |
-| Last commit | **{stats['last_commit']}** |
+| Last push | **{stats['last_push']}** |
 
 <sub>Auto-refreshed by GitHub Actions · last run: {stats['updated']}</sub>
 <!-- END_REPO_STATS -->"""
