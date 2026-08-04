@@ -331,7 +331,7 @@ def render_languages_svg(langs: list[tuple[str, int]]) -> str:
     height = CARD_HEIGHT
     # Rows fill the space between the bar and the footer line, spaced evenly
     # so 1 language and 8 languages both look intentional inside the fixed card.
-    row_start, row_end = 100, height - 40
+    row_start, row_end = 116, height - 40
     row_step = max(20, (row_end - row_start) // max(1, len(langs)))
 
     rows = []
