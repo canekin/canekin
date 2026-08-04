@@ -66,61 +66,21 @@ Live list of the **5 repos with the newest commits** (profile repo excluded). Re
   <img src="./generated/skills.svg" alt="Skills stack" width="100%" />
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/-C%23-0a0a0a?style=flat-square&logo=csharp&logoColor=22c55e" alt="C#" />
-  <img src="https://img.shields.io/badge/-Python-0a0a0a?style=flat-square&logo=python&logoColor=22c55e" alt="Python" />
-  <img src="https://img.shields.io/badge/-TypeScript-0a0a0a?style=flat-square&logo=typescript&logoColor=22c55e" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/-JavaScript-0a0a0a?style=flat-square&logo=javascript&logoColor=22c55e" alt="JavaScript" />
-  <img src="https://img.shields.io/badge/-Next.js-0a0a0a?style=flat-square&logo=nextdotjs&logoColor=22c55e" alt="Next.js" />
-  <img src="https://img.shields.io/badge/-React-0a0a0a?style=flat-square&logo=react&logoColor=22c55e" alt="React" />
-  <img src="https://img.shields.io/badge/-ASP.NET-0a0a0a?style=flat-square&logo=dotnet&logoColor=22c55e" alt="ASP.NET" />
-  <img src="https://img.shields.io/badge/-Node.js-0a0a0a?style=flat-square&logo=nodedotjs&logoColor=22c55e" alt="Node.js" />
-  <img src="https://img.shields.io/badge/-SQL-0a0a0a?style=flat-square&logo=postgresql&logoColor=22c55e" alt="SQL" />
-  <img src="https://img.shields.io/badge/-Tailwind-0a0a0a?style=flat-square&logo=tailwindcss&logoColor=22c55e" alt="Tailwind" />
-  <img src="https://img.shields.io/badge/-Unity-0a0a0a?style=flat-square&logo=unity&logoColor=22c55e" alt="Unity" />
-  <img src="https://img.shields.io/badge/-Git-0a0a0a?style=flat-square&logo=git&logoColor=22c55e" alt="Git" />
-</p>
-
 ---
 
 ### `ssh can@ekin` — connect
 
-<table>
-<tr>
-<td>
+<p align="center">
+  <img src="./generated/connect.svg" alt="Connect with canekin" width="100%" />
+</p>
 
-```bash
-can@ekin:~$ ssh can@ekin
-# authorized keys
-```
-
-</td>
-</tr>
-<tr>
-<td>
-
-| Channel | Handle |
-| :--- | :--- |
-| 🌐 Portfolio | [canekin.com](https://www.canekin.com) |
-| 💼 LinkedIn | [mehmetcanekin](https://linkedin.com/in/mehmetcanekin) |
-| ✉️ Email | [iletisim@canekin.com](mailto:iletisim@canekin.com) |
-| ⌨ GitHub | [canekin](https://github.com/canekin) |
-
-<p>
+<p align="center">
   <a href="https://www.canekin.com"><img src="https://img.shields.io/badge/open-canekin.com-22c55e?style=for-the-badge&labelColor=0a0a0a&logo=googlechrome&logoColor=22c55e" alt="Portfolio" /></a>
   <a href="https://linkedin.com/in/mehmetcanekin"><img src="https://img.shields.io/badge/connect-mehmetcanekin-0A66C2?style=for-the-badge&labelColor=0a0a0a&logo=linkedin&logoColor=0A66C2" alt="LinkedIn" /></a>
   <a href="mailto:iletisim@canekin.com"><img src="https://img.shields.io/badge/mail-iletisim%40canekin.com-EA4335?style=for-the-badge&labelColor=0a0a0a&logo=gmail&logoColor=EA4335" alt="Email" /></a>
   <a href="https://github.com/canekin"><img src="https://img.shields.io/badge/clone-canekin-ededed?style=for-the-badge&labelColor=0a0a0a&logo=github&logoColor=ededed" alt="GitHub" /></a>
 </p>
 
-```bash
-echo "ship something cool today"
-```
-
-</td>
-</tr>
-</table>
-
 <p align="center">
-  <sub>built to match <a href="https://www.canekin.com">canekin.com</a> · refreshed without me touching it</sub>
+  <sub>built with passion · visit<a href="https://www.canekin.com">canekin.com</a> </sub>
 </p>

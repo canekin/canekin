@@ -1,29 +1,54 @@
 #!/usr/bin/env python3
-"""Generate a terminal-styled skills SVG for the profile README."""
+"""Generate a terminal-styled skills SVG with brand icons in each pill."""
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "generated" / "skills.svg"
+ICONS_PATH = Path(__file__).resolve().parent / "skill_icons.json"
 
 SVG_WIDTH = 900
+ICON_SIZE = 12
+ICON_GAP = 6
+PAD_X = 9
+PILL_H = 26
 
-LAYERS: list[tuple[str, list[str], str]] = [
+# (label, icon slug | None)
+LAYERS: list[tuple[str, list[tuple[str, str | None]], str]] = [
     (
         "languages",
-        ["C#", "Python", "TypeScript", "JavaScript", "SQL"],
+        [
+            ("C#", "csharp"),
+            ("Python", "python"),
+            ("TypeScript", "typescript"),
+            ("JavaScript", "javascript"),
+            ("SQL", "postgresql"),
+        ],
         "#22c55e",
     ),
     (
         "web / app",
-        ["Next.js", "React", "ASP.NET Core", "Node.js", "Tailwind"],
+        [
+            ("Next.js", "nextdotjs"),
+            ("React", "react"),
+            ("ASP.NET Core", "dotnet"),
+            ("Node.js", "nodedotjs"),
+            ("Tailwind", "tailwindcss"),
+        ],
         "#60a5fa",
     ),
     (
         "build & ship",
-        ["Git", "CI/CD", "Unity", "REST APIs", "Vitest"],
+        [
+            ("Git", "git"),
+            ("CI/CD", "githubactions"),
+            ("Unity", "unity"),
+            ("REST APIs", "swagger"),
+            ("Vitest", "vitest"),
+        ],
         "#fbbf24",
     ),
 ]
@@ -39,29 +64,67 @@ def esc(text: object) -> str:
     )
 
 
-def pill_width(label: str) -> int:
-    return max(36, len(label) * 7 + 20)
+def load_icons() -> dict[str, dict[str, str]]:
+    return json.loads(ICONS_PATH.read_text(encoding="utf-8"))
 
 
-def render_pills(items: list[str], x: int, y: int, accent: str) -> str:
+def pill_width(label: str, has_icon: bool) -> int:
+    text_w = max(18, len(label) * 7)
+    icon_w = ICON_SIZE + ICON_GAP if has_icon else 0
+    return PAD_X * 2 + icon_w + text_w
+
+
+def render_icon(
+    icons: dict[str, dict[str, str]],
+    slug: str,
+    x: float,
+    y: float,
+) -> str:
+    """Inline path (more reliable than <use> when SVG is shown via <img>)."""
+    meta = icons[slug]
+    scale = ICON_SIZE / 24
+    return (
+        f'<g transform="translate({x:.1f},{y:.1f}) scale({scale:.4f})">'
+        f'<path fill="#{meta["color"]}" d="{meta["d"]}"/>'
+        f"</g>"
+    )
+
+
+def render_pills(
+    icons: dict[str, dict[str, str]],
+    items: list[tuple[str, str | None]],
+    x: int,
+    y: int,
+    accent: str,
+) -> str:
     parts: list[str] = []
     cursor = x
-    for item in items:
-        w = pill_width(item)
+    for label, slug in items:
+        has_icon = bool(slug)
+        w = pill_width(label, has_icon)
+        top = y - 14
         parts.append(
-            f'<rect x="{cursor}" y="{y - 13}" width="{w}" height="24" rx="7" '
+            f'<rect x="{cursor}" y="{top}" width="{w}" height="{PILL_H}" rx="7" '
             f'fill="{accent}" fill-opacity="0.12" stroke="{accent}" stroke-opacity="0.4"/>'
-            f'<text x="{cursor + 10}" y="{y + 4}" fill="{accent}" '
+        )
+        text_x = cursor + PAD_X
+        if has_icon and slug:
+            icon_y = top + (PILL_H - ICON_SIZE) / 2
+            parts.append(render_icon(icons, slug, cursor + PAD_X, icon_y))
+            text_x = cursor + PAD_X + ICON_SIZE + ICON_GAP
+        parts.append(
+            f'<text x="{text_x}" y="{y + 4}" fill="{accent}" '
             f'font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" '
-            f'font-size="12" font-weight="600">{esc(item)}</text>'
+            f'font-size="12" font-weight="600">{esc(label)}</text>'
         )
         cursor += w + 8
     return "".join(parts)
 
 
 def render() -> str:
+    icons = load_icons()
     header_h = 78
-    layer_h = 72
+    layer_h = 74
     footer_h = 36
     height = header_h + len(LAYERS) * layer_h + footer_h
 
@@ -69,7 +132,7 @@ def render() -> str:
     for i, (name, tools, accent) in enumerate(LAYERS):
         y0 = header_h + i * layer_h
         y_label = y0 + 26
-        y_pills = y0 + 52
+        y_pills = y0 + 54
 
         if i % 2 == 0:
             rows.append(
@@ -84,7 +147,7 @@ def render() -> str:
             f'<tspan fill="#22c55e">»</tspan> '
             f'<tspan fill="{accent}" font-weight="700">{esc(name)}</tspan>'
             f"</text>"
-            f'{render_pills(tools, 48, y_pills, accent)}'
+            f"{render_pills(icons, tools, 48, y_pills, accent)}"
         )
 
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{SVG_WIDTH}" height="{height}" viewBox="0 0 {SVG_WIDTH} {height}" role="img" aria-label="Skills for canekin">
