@@ -2,8 +2,8 @@ name: Update profile stats
 
 on:
   schedule:
-    # every 6 hours, offset from :00 to reduce Actions congestion
-    - cron: "17 */6 * * *"
+    # every hour, offset from :00 to reduce Actions congestion
+    - cron: "17 * * * *"
   workflow_dispatch:
   push:
     branches: [main]
