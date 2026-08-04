@@ -32,7 +32,7 @@ Currently : Bahçeşehir University · building products & bots that ship
 C#, Python ve Next.js ile modern uygulamalar geliştiriyorum. Temiz mimari, otomatik test ve gerçek kullanıma çıkan araçlar benim için default.
 
 <p align="center">
-  <!-- START_REPO_LINE -->`6 public` · `5 private` · `11 total`<!-- END_REPO_LINE -->
+  <!-- START_REPO_LINE -->`7 public` · `? private` · `7+ total`<!-- END_REPO_LINE -->
 </p>
 
 ---
@@ -49,13 +49,13 @@ C#, Python ve Next.js ile modern uygulamalar geliştiriyorum. Temiz mimari, otom
 <!-- START_REPO_STATS -->
 | Metric | Count |
 | :--- | ---: |
-| Public repos | **6** |
-| Private repos | **5** |
-| Total (owned, non-fork) | **11** |
-| Stars | **2** |
+| Public repos | **7** |
+| Private repos | **_requires PROFILE_TOKEN_** |
+| Total (owned, non-fork) | **7+** |
+| Stars | **1** |
 | Followers | **0** |
 
-<sub>Auto-refreshed by GitHub Actions · last run: 2026-08-04 15:14 UTC</sub>
+<sub>Auto-refreshed by GitHub Actions · last run: 2026-08-04 15:16 UTC</sub>
 <!-- END_REPO_STATS -->
 
 <p align="center">
