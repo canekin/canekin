@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <!-- START_REPO_LINE -->`7 public` · `5 private` · `12 total` · `126 contribs/yr`<!-- END_REPO_LINE -->
+  <!-- START_REPO_LINE -->'7 public' · `5 private` · `12 total` · `126 contribs/yr`<!-- END_REPO_LINE -->
 </p>
 
 ---
