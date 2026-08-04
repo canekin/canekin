@@ -50,16 +50,17 @@ GitHub-style contribution snake.
 
 ---
 
-### `ls ~/projects` — featured work
+### `ls ~/projects --sort=pushed` — recently shipping
 
-| Repo | What it does | Stack |
-| :--- | :--- | :--- |
-| [IstanbulPark-AI-Train-2D](https://github.com/canekin/IstanbulPark-AI-Train-2D) | Cars learn Istanbul Park with PPO / ML-Agents | Unity · C# · Python |
-| [WiFi-Ruler](https://github.com/canekin/WiFi-Ruler) | Lock Wi-Fi to 2.4 / 5 / 6 GHz on Windows | Python · WLAN API |
-| [PriceTracker](https://github.com/canekin/PriceTracker) | Async price watcher → Telegram alerts | Python · Playwright |
-| [TeslaInventoryTrack](https://github.com/canekin/TeslaInventoryTrack) | Live Tesla inventory notifier | C# · WinForms · .NET |
-| [KararsizCarki](https://github.com/canekin/KararsizCarki) | Fun decision wheel for Android | Java · Android |
-| [GrappleClimb](https://github.com/canekin/GrappleClimb) | Physics-based vertical climb arcade | Unity · C# |
+Live list of the **5 repos with the newest commits** (profile repo excluded). Refreshed by Actions.
+
+<p align="center">
+  <img src="./generated/projects.svg" alt="Recently pushed projects" width="100%" />
+</p>
+
+<!-- START_FEATURED_PROJECTS -->
+<p align="center"><sub>open → [`IstanbulPark-AI-Train-2D`](https://github.com/canekin/IstanbulPark-AI-Train-2D) · [`WiFi-Ruler`](https://github.com/canekin/WiFi-Ruler) · [`PriceTracker`](https://github.com/canekin/PriceTracker) · [`TeslaInventoryTrack`](https://github.com/canekin/TeslaInventoryTrack) · [`KararsizCarki`](https://github.com/canekin/KararsizCarki)</sub></p>
+<!-- END_FEATURED_PROJECTS -->
 
 Also shipping outside public GitHub: **CanXer** Discord bot (10k+ users), freelance .NET systems, and [canekin.com](https://www.canekin.com).
 

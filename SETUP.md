@@ -6,11 +6,14 @@ This repository powers **https://github.com/canekin**.
 
 | Piece | How | Cadence |
 | --- | --- | --- |
-| Public / private repo counts + custom SVG | `.github/workflows/stats.yml` → `scripts/generate_stats.py` | every 6 hours (+ manual) |
+| Public / private repo counts + custom SVG | `.github/workflows/stats.yml` → `scripts/generate_stats.py` | hourly (+ manual) |
+| Recently pushed projects (top 5) | `.github/workflows/stats.yml` → `scripts/generate_projects.py` | hourly (+ manual) |
 | Contribution snake (dark, card-framed) | `.github/workflows/snake.yml` (Platane/snk + `scripts/frame_snake.py`) | daily |
 | Activity graph / language cards | third-party SVG APIs embedded in README | on each profile view (cached) |
 
-You do **not** need to edit the README for stats — Actions commits refreshed numbers into `generated/stats.svg` and the marked table.
+You do **not** need to edit the README for stats or the featured projects list — Actions refreshes `generated/stats.svg`, `generated/projects.svg`, and the `<!-- START_FEATURED_PROJECTS -->` block.
+
+To tweak how a project is described in that list, edit the `CURATED` map in `scripts/generate_projects.py` (description + stack).
 
 ## Enable private repo counts (recommended)
 
@@ -36,6 +39,7 @@ Locally (optional):
 
 ```bash
 python scripts/generate_stats.py
+python scripts/generate_projects.py
 ```
 
 With private visibility:
@@ -44,4 +48,5 @@ With private visibility:
 # PowerShell
 $env:PROFILE_TOKEN = "ghp_..."
 python scripts/generate_stats.py
+python scripts/generate_projects.py
 ```
