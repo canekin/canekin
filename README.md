@@ -21,7 +21,7 @@
 ```text
 Name      : Can Ekin
 Role      : Software Engineering student · Full-Stack / Backend & Web
-Stack     : C# · Python · Next.js · TypeScript · ASP.NET
+Stack     : C# · Python · Next.js · JavaScript · ASP.NET
 Currently : Bahçeşehir University · building cool stuff & open for opportunities
 ```
 
