@@ -31,11 +31,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Generate stats SVG + README patch
+      - name: Generate stats / languages / contributions SVGs
         env:
           GITHUB_USERNAME: canekin
-          # Prefer a classic/fine-grained PAT with `repo` (private counts).
-          # Falls back to Actions token (public-only visibility).
+          # Prefer a classic/fine-grained PAT with `repo` + read:user
+          # (private repo counts + private contribution calendar).
           PROFILE_TOKEN: ${{ secrets.PROFILE_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/generate_stats.py
@@ -44,7 +44,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add generated/stats.svg README.md
+          git add generated/stats.svg generated/languages.svg generated/contributions.svg README.md
           if git diff --staged --quiet; then
             echo "No stats changes"
             exit 0
