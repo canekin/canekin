@@ -17,7 +17,7 @@ ICON_SIZE = 16
 CHANNELS: list[tuple[str, str, str, str, str]] = [
     ("portfolio", "canekin.com", "https://www.canekin.com", "googlechrome", "#22c55e"),
     ("linkedin", "mehmetcanekin", "https://linkedin.com/in/mehmetcanekin", "linkedin", "#0A66C2"),
-    ("email", "iletisim@canekin.com", "mailto:hello@canekin.com", "gmail", "#EA4335"),
+    ("email", "hello@canekin.com", "mailto:hello@canekin.com", "gmail", "#EA4335"),
     ("github", "canekin", "https://github.com/canekin", "github", "#ededed"),
 ]
 
