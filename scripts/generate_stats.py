@@ -540,7 +540,7 @@ def main() -> None:
                     encoding="utf-8",
                 )
 
-    patch_readme(stats, total_contrib)
+    # README is maintained manually — don't overwrite user edits\n    # patch_readme(stats, total_contrib)
     print(json.dumps({**stats, "languages": [n for n, _ in langs]}, indent=2))
 
 
