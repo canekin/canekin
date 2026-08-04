@@ -269,7 +269,7 @@ def render_stats_svg(stats: dict) -> str:
         ("last commit", stats["last_commit"], "#f472b6"),
     ]
     lines = []
-    y = 78
+    y = 110
     for label, value, color in rows:
         lines.append(
             f'<text x="28" y="{y}" fill="#9ca3af" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14">'
