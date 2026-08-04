@@ -318,7 +318,7 @@ def render_stats_svg(stats: dict) -> str:
 def render_languages_svg(langs: list[tuple[str, int]]) -> str:
     total = sum(v for _, v in langs) or 1
     palette = ["#22c55e", "#60a5fa", "#fbbf24", "#f472b6", "#a78bfa", "#34d399", "#fb7185", "#38bdf8"]
-    bar_x, bar_y, bar_w, bar_h = 28, 90, 464, 14
+    bar_x, bar_y, bar_w, bar_h = 28, 78, 464, 14
     parts = []
     x = bar_x
     for i, (name, value) in enumerate(langs):
