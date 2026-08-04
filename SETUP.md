@@ -7,7 +7,7 @@ This repository powers **https://github.com/canekin**.
 | Piece | How | Cadence |
 | --- | --- | --- |
 | Public / private repo counts + custom SVG | `.github/workflows/stats.yml` → `scripts/generate_stats.py` | every 6 hours (+ manual) |
-| Contribution snake | `.github/workflows/snake.yml` (Platane/snk) | daily |
+| Contribution snake (dark, card-framed) | `.github/workflows/snake.yml` (Platane/snk + `scripts/frame_snake.py`) | daily |
 | Activity graph / language cards | third-party SVG APIs embedded in README | on each profile view (cached) |
 
 You do **not** need to edit the README for stats — Actions commits refreshed numbers into `generated/stats.svg` and the marked table.
@@ -25,6 +25,8 @@ Default `GITHUB_TOKEN` inside Actions **cannot** list your private repositories.
 4. Actions → **Update profile stats** → **Run workflow**
 
 After that, the SVG and table show real `x public · y private`.
+
+The same `PROFILE_TOKEN` is required for the contribution snake: without it, Platane/snk only sees public contribution days and the grid looks almost empty compared to your GitHub profile calendar. Also keep **Settings → Profile → Contributions & activity → Include private contributions on my profile** enabled if you want private days on the graph.
 
 ## Manual trigger
 

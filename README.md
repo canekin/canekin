@@ -42,11 +42,7 @@ Currently : Bahçeşehir University · building cool stuff & open for opportunit
 
 ### `git log --graph` — contributions
 
-GitHub-style heatmap for the last year ending today (private commits included when enabled). Peak month is called out on the card.
-
-<p align="center">
-  <img src="./generated/contributions.svg" alt="Contribution calendar including private commits" />
-</p>
+GitHub-style contribution snake for the last year (private commits included when enabled). Peak month is called out on the card; empty cells stay dark.
 
 <p align="center">
   <img src="./generated/github-snake-dark.svg" alt="Contribution snake animation" />
