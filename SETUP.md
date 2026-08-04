@@ -10,6 +10,7 @@ This repository powers **https://github.com/canekin**.
 | Recently pushed projects (top 5) | `.github/workflows/stats.yml` → `scripts/generate_projects.py` | hourly (+ manual) |
 | Skills card SVG | `.github/workflows/stats.yml` → `scripts/generate_skills.py` | on script change / schedule |
 | Connect card SVG | `.github/workflows/stats.yml` → `scripts/generate_connect.py` | on script change / schedule |
+| About card SVG | `.github/workflows/stats.yml` → `scripts/generate_about.py` | on script change / schedule |
 | Contribution snake (dark, card-framed) | `.github/workflows/snake.yml` (Platane/snk + `scripts/frame_snake.py`) | daily |
 | Activity graph / language cards | third-party SVG APIs embedded in README | on each profile view (cached) |
 
@@ -44,6 +45,7 @@ python scripts/generate_stats.py
 python scripts/generate_projects.py
 python scripts/generate_skills.py
 python scripts/generate_connect.py
+python scripts/generate_about.py
 ```
 
 With private visibility:
@@ -55,4 +57,5 @@ python scripts/generate_stats.py
 python scripts/generate_projects.py
 python scripts/generate_skills.py
 python scripts/generate_connect.py
+python scripts/generate_about.py
 ```

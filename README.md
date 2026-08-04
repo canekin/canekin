@@ -18,12 +18,9 @@
 
 ### `can@ekin:~$` about
 
-```text
-Name      : Can Ekin
-Role      : Software Engineering student · Full-Stack / Backend & Web
-Stack     : C# · Python · Next.js · JavaScript · ASP.NET
-Currently : Bahçeşehir University · building cool stuff & open for opportunities
-```
+<p align="center">
+  <img src="./generated/about.svg" alt="About Can Ekin" width="100%" />
+</p>
 
 ---
 
@@ -77,10 +74,10 @@ Live list of the **5 repos with the newest commits** (profile repo excluded). Re
 <p align="center">
   <a href="https://www.canekin.com"><img src="https://img.shields.io/badge/open-canekin.com-22c55e?style=for-the-badge&labelColor=0a0a0a&logo=googlechrome&logoColor=22c55e" alt="Portfolio" /></a>
   <a href="https://linkedin.com/in/mehmetcanekin"><img src="https://img.shields.io/badge/connect-mehmetcanekin-0A66C2?style=for-the-badge&labelColor=0a0a0a&logo=linkedin&logoColor=0A66C2" alt="LinkedIn" /></a>
-  <a href="mailto:iletisim@canekin.com"><img src="https://img.shields.io/badge/mail-iletisim%40canekin.com-EA4335?style=for-the-badge&labelColor=0a0a0a&logo=gmail&logoColor=EA4335" alt="Email" /></a>
+  <a href="mailto:hello@canekin.com"><img src="https://img.shields.io/badge/mail-hello%40canekin.com-EA4335?style=for-the-badge&labelColor=0a0a0a&logo=gmail&logoColor=EA4335" alt="Email" /></a>
   <a href="https://github.com/canekin"><img src="https://img.shields.io/badge/clone-canekin-ededed?style=for-the-badge&labelColor=0a0a0a&logo=github&logoColor=ededed" alt="GitHub" /></a>
 </p>
 
 <p align="center">
-  <sub>built with passion · visit<a href="https://www.canekin.com">canekin.com</a> </sub>
+  <sub>built with passion · visit <a href="https://www.canekin.com">canekin.com</a> </sub>
 </p>

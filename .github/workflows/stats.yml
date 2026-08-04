@@ -12,6 +12,7 @@ on:
       - "scripts/generate_projects.py"
       - "scripts/generate_skills.py"
       - "scripts/generate_connect.py"
+      - "scripts/generate_about.py"
       - ".github/workflows/stats.yml"
 
 concurrency:
@@ -55,11 +56,14 @@ jobs:
       - name: Generate connect SVG
         run: python scripts/generate_connect.py
 
+      - name: Generate about SVG
+        run: python scripts/generate_about.py
+
       - name: Commit if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add generated/stats.svg generated/languages.svg generated/contributions.svg generated/projects.svg generated/skills.svg generated/connect.svg
+          git add generated/stats.svg generated/languages.svg generated/contributions.svg generated/projects.svg generated/skills.svg generated/connect.svg generated/about.svg
           if git diff --staged --quiet; then
             echo "No profile asset changes"
             exit 0
