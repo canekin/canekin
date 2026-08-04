@@ -58,36 +58,15 @@ Live list of the **5 repos with the newest commits** (profile repo excluded). Re
   <img src="./generated/projects.svg" alt="Recently pushed projects" width="100%" />
 </p>
 
-<!-- START_FEATURED_PROJECTS -->
-<p align="center"><sub>open → [`IstanbulPark-AI-Train-2D`](https://github.com/canekin/IstanbulPark-AI-Train-2D) · [`WiFi-Ruler`](https://github.com/canekin/WiFi-Ruler) · [`PriceTracker`](https://github.com/canekin/PriceTracker) · [`TeslaInventoryTrack`](https://github.com/canekin/TeslaInventoryTrack) · [`KararsizCarki`](https://github.com/canekin/KararsizCarki)</sub></p>
-<!-- END_FEATURED_PROJECTS -->
-
-Also shipping outside public GitHub: **CanXer** Discord bot (10k+ users), freelance .NET systems, and [canekin.com](https://www.canekin.com).
-
 ---
 
 ### `cat ~/skills.json`
 
-<table>
-<tr>
-<td>
+<p align="center">
+  <img src="./generated/skills.svg" alt="Skills stack" width="100%" />
+</p>
 
-```bash
-can@ekin:~/skills$ cat skills.json
-```
-
-</td>
-</tr>
-<tr>
-<td>
-
-| Layer | Tools |
-| :--- | :--- |
-| **Languages** | `C#` · `Python` · `TypeScript` · `JavaScript` · `SQL` |
-| **Web / App** | `Next.js` · `React` · `ASP.NET Core` · `Node.js` · `Tailwind` |
-| **Build & Ship** | `Git` · `CI/CD` · `Unity` · `REST APIs` · `Vitest` |
-
-<p>
+<p align="center">
   <img src="https://img.shields.io/badge/-C%23-0a0a0a?style=flat-square&logo=csharp&logoColor=22c55e" alt="C#" />
   <img src="https://img.shields.io/badge/-Python-0a0a0a?style=flat-square&logo=python&logoColor=22c55e" alt="Python" />
   <img src="https://img.shields.io/badge/-TypeScript-0a0a0a?style=flat-square&logo=typescript&logoColor=22c55e" alt="TypeScript" />
@@ -101,10 +80,6 @@ can@ekin:~/skills$ cat skills.json
   <img src="https://img.shields.io/badge/-Unity-0a0a0a?style=flat-square&logo=unity&logoColor=22c55e" alt="Unity" />
   <img src="https://img.shields.io/badge/-Git-0a0a0a?style=flat-square&logo=git&logoColor=22c55e" alt="Git" />
 </p>
-
-</td>
-</tr>
-</table>
 
 ---
 

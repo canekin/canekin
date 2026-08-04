@@ -8,12 +8,13 @@ This repository powers **https://github.com/canekin**.
 | --- | --- | --- |
 | Public / private repo counts + custom SVG | `.github/workflows/stats.yml` → `scripts/generate_stats.py` | hourly (+ manual) |
 | Recently pushed projects (top 5) | `.github/workflows/stats.yml` → `scripts/generate_projects.py` | hourly (+ manual) |
+| Skills card SVG | `.github/workflows/stats.yml` → `scripts/generate_skills.py` | on script change / schedule |
 | Contribution snake (dark, card-framed) | `.github/workflows/snake.yml` (Platane/snk + `scripts/frame_snake.py`) | daily |
 | Activity graph / language cards | third-party SVG APIs embedded in README | on each profile view (cached) |
 
-You do **not** need to edit the README for stats or the featured projects list — Actions refreshes `generated/stats.svg`, `generated/projects.svg`, and the `<!-- START_FEATURED_PROJECTS -->` block.
+You do **not** need to edit the README for stats or the projects list — Actions refreshes `generated/stats.svg` and `generated/projects.svg`.
 
-To tweak how a project is described in that list, edit the `CURATED` map in `scripts/generate_projects.py` (description + stack).
+To tweak project copy, edit the `CURATED` map in `scripts/generate_projects.py`. To change skills layers/tools, edit `LAYERS` in `scripts/generate_skills.py`.
 
 ## Enable private repo counts (recommended)
 
@@ -40,6 +41,7 @@ Locally (optional):
 ```bash
 python scripts/generate_stats.py
 python scripts/generate_projects.py
+python scripts/generate_skills.py
 ```
 
 With private visibility:
@@ -49,4 +51,5 @@ With private visibility:
 $env:PROFILE_TOKEN = "ghp_..."
 python scripts/generate_stats.py
 python scripts/generate_projects.py
+python scripts/generate_skills.py
 ```

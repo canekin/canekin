@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate recently-pushed project showcase SVG and patch README markers.
+"""Generate recently-pushed project showcase SVG for the profile README.
 
 Shows the 5 public, non-fork repos with the most recent commits (pushed_at),
 excluding the profile repo itself.
@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import json
 import os
-import re
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
@@ -22,7 +21,6 @@ TOKEN = (
     or ""
 )
 ROOT = Path(__file__).resolve().parents[1]
-README = ROOT / "README.md"
 OUT_DIR = ROOT / "generated"
 PROJECTS_SVG = OUT_DIR / "projects.svg"
 
@@ -299,39 +297,11 @@ def render_projects_svg(projects: list[dict]) -> str:
 '''
 
 
-def render_readme_block(projects: list[dict]) -> str:
-    """Compact clickable index under the SVG (SVG itself is not linkable via <img>)."""
-    links = " · ".join(
-        f"[`{p['name']}`]({p['url']})" for p in projects
-    )
-    return "\n".join(
-        [
-            "<!-- START_FEATURED_PROJECTS -->",
-            f"<p align=\"center\"><sub>open → {links}</sub></p>",
-            "<!-- END_FEATURED_PROJECTS -->",
-        ]
-    )
-
-
-def patch_readme(projects: list[dict]) -> None:
-    if not README.exists():
-        return
-    content = README.read_text(encoding="utf-8")
-    block = render_readme_block(projects)
-    pattern = r"<!-- START_FEATURED_PROJECTS -->.*?<!-- END_FEATURED_PROJECTS -->"
-    if re.search(pattern, content, flags=re.S):
-        content = re.sub(pattern, block, content, count=1, flags=re.S)
-    else:
-        raise SystemExit("README markers START/END_FEATURED_PROJECTS not found")
-    README.write_text(content, encoding="utf-8")
-
-
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     repos = fetch_owned_public_repos()
     projects = select_recent_projects(repos)
     PROJECTS_SVG.write_text(render_projects_svg(projects), encoding="utf-8")
-    patch_readme(projects)
     print(
         json.dumps(
             [

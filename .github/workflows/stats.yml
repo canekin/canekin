@@ -10,6 +10,7 @@ on:
     paths:
       - "scripts/generate_stats.py"
       - "scripts/generate_projects.py"
+      - "scripts/generate_skills.py"
       - ".github/workflows/stats.yml"
 
 concurrency:
@@ -40,22 +41,25 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/generate_stats.py
 
-      - name: Generate recently-pushed projects SVG + README list
+      - name: Generate recently-pushed projects SVG
         env:
           GITHUB_USERNAME: canekin
           PROFILE_TOKEN: ${{ secrets.PROFILE_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/generate_projects.py
 
+      - name: Generate skills SVG
+        run: python scripts/generate_skills.py
+
       - name: Commit if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add generated/stats.svg generated/languages.svg generated/contributions.svg generated/projects.svg README.md
+          git add generated/stats.svg generated/languages.svg generated/contributions.svg generated/projects.svg generated/skills.svg
           if git diff --staged --quiet; then
             echo "No profile asset changes"
             exit 0
           fi
-          git commit -m "chore: refresh live profile stats & projects"
+          git commit -m "chore: refresh live profile assets"
           git pull --rebase origin main
           git push
