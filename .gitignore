@@ -1,0 +1,9 @@
+# Keep local preview assets out of noise; committed SVGs are intentional
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc
+.venv/
+.env
+.env.*
+!.env.example
