@@ -80,16 +80,7 @@ jobs:
       - name: Commit if changed
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: chore: refresh live profile assets
-          file_pattern: |
-            generated/stats.svg
-            generated/languages.svg
-            generated/contributions.svg
-            generated/projects.svg
-            generated/skills.svg
-            generated/connect.svg
-            generated/about.svg
-            generated/github-snake-dark.svg
-          commit_user_name: github-actions[bot]
-          commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
-          commit_author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          commit_message: "chore: refresh live profile assets"
+          file_pattern: "generated/*.svg"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
