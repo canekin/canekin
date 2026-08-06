@@ -78,33 +78,18 @@ jobs:
         run: python scripts/frame_snake.py
 
       - name: Commit if changed
-        run: |
-          set -e
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
-            generated/stats.svg \
-            generated/languages.svg \
-            generated/contributions.svg \
-            generated/projects.svg \
-            generated/skills.svg \
-            generated/connect.svg \
-            generated/about.svg \
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: chore: refresh live profile assets
+          file_pattern: |
+            generated/stats.svg
+            generated/languages.svg
+            generated/contributions.svg
+            generated/projects.svg
+            generated/skills.svg
+            generated/connect.svg
+            generated/about.svg
             generated/github-snake-dark.svg
-          if git diff --staged --quiet; then
-            echo "No profile asset changes"
-            exit 0
-          fi
-          git commit -m "chore: refresh live profile assets"
-          # Retry push — concurrent runs / rebase races are common on schedule
-          for attempt in 1 2 3 4 5; do
-            git pull --rebase origin main
-            if git push; then
-              echo "Pushed on attempt ${attempt}"
-              exit 0
-            fi
-            echo "Push failed (attempt ${attempt}), retrying..."
-            sleep $((attempt * 5))
-          done
-          echo "Push failed after retries"
-          exit 1
+          commit_user_name: github-actions[bot]
+          commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
+          commit_author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
