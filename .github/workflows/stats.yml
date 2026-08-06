@@ -1,9 +1,9 @@
-name: Update profile stats
+name: Refresh profile assets
 
 on:
   schedule:
-    # every hour, offset from :00 to reduce Actions congestion
-    - cron: "17 * * * *"
+    # Hourly, offset from :00 — GitHub docs warn top-of-hour schedules get delayed/dropped
+    - cron: "41 * * * *"
   workflow_dispatch:
   push:
     branches: [main]
@@ -13,10 +13,12 @@ on:
       - "scripts/generate_skills.py"
       - "scripts/generate_connect.py"
       - "scripts/generate_about.py"
+      - "scripts/frame_snake.py"
       - ".github/workflows/stats.yml"
+      - ".github/workflows/snake.yml"
 
 concurrency:
-  group: profile-stats
+  group: profile-assets
   cancel-in-progress: true
 
 permissions:
@@ -25,9 +27,12 @@ permissions:
 jobs:
   generate:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -37,8 +42,6 @@ jobs:
       - name: Generate stats / languages / contributions SVGs
         env:
           GITHUB_USERNAME: canekin
-          # Prefer a classic/fine-grained PAT with `repo` + read:user
-          # (private repo counts + private contribution calendar).
           PROFILE_TOKEN: ${{ secrets.PROFILE_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/generate_stats.py
@@ -59,15 +62,49 @@ jobs:
       - name: Generate about SVG
         run: python scripts/generate_about.py
 
+      - name: Generate snake SVG (github-dark)
+        uses: Platane/snk@v3
+        with:
+          github_user_name: canekin
+          github_token: ${{ secrets.PROFILE_TOKEN || github.token }}
+          outputs: |
+            generated/github-snake-dark.svg?palette=github-dark
+
+      - name: Frame snake SVG
+        env:
+          GITHUB_USERNAME: canekin
+          PROFILE_TOKEN: ${{ secrets.PROFILE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/frame_snake.py
+
       - name: Commit if changed
         run: |
+          set -e
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add generated/stats.svg generated/languages.svg generated/contributions.svg generated/projects.svg generated/skills.svg generated/connect.svg generated/about.svg
+          git add \
+            generated/stats.svg \
+            generated/languages.svg \
+            generated/contributions.svg \
+            generated/projects.svg \
+            generated/skills.svg \
+            generated/connect.svg \
+            generated/about.svg \
+            generated/github-snake-dark.svg
           if git diff --staged --quiet; then
             echo "No profile asset changes"
             exit 0
           fi
           git commit -m "chore: refresh live profile assets"
-          git pull --rebase origin main
-          git push
+          # Retry push — concurrent runs / rebase races are common on schedule
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase origin main
+            if git push; then
+              echo "Pushed on attempt ${attempt}"
+              exit 0
+            fi
+            echo "Push failed (attempt ${attempt}), retrying..."
+            sleep $((attempt * 5))
+          done
+          echo "Push failed after retries"
+          exit 1

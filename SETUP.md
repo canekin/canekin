@@ -6,39 +6,45 @@ This repository powers **https://github.com/canekin**.
 
 | Piece | How | Cadence |
 | --- | --- | --- |
-| Public / private repo counts + custom SVG | `.github/workflows/stats.yml` → `scripts/generate_stats.py` | hourly (+ manual) |
-| Recently pushed projects (top 5) | `.github/workflows/stats.yml` → `scripts/generate_projects.py` | hourly (+ manual) |
-| Skills card SVG | `.github/workflows/stats.yml` → `scripts/generate_skills.py` | on script change / schedule |
-| Connect card SVG | `.github/workflows/stats.yml` → `scripts/generate_connect.py` | on script change / schedule |
-| About card SVG | `.github/workflows/stats.yml` → `scripts/generate_about.py` | on script change / schedule |
-| Contribution snake (dark, card-framed) | `.github/workflows/snake.yml` (Platane/snk + `scripts/frame_snake.py`) | daily |
-| Activity graph / language cards | third-party SVG APIs embedded in README | on each profile view (cached) |
+| Stats / languages / contributions SVGs | `.github/workflows/stats.yml` → `scripts/generate_stats.py` | **hourly** (`:41` UTC) + manual |
+| Recently pushed projects (top 5) | same workflow → `scripts/generate_projects.py` | hourly + manual |
+| Skills / connect / about SVGs | same workflow | hourly + manual |
+| Contribution snake | same workflow → Platane/snk + `scripts/frame_snake.py` | **hourly** (was daily) |
+| Manual snake-only | `.github/workflows/snake.yml` | manual only |
 
-You do **not** need to edit the README for stats or the projects list — Actions refreshes `generated/stats.svg` and `generated/projects.svg`.
+One workflow refreshes everything in a single commit (avoids push races between stats and snake).
 
-To tweak project copy, edit the `CURATED` map in `scripts/generate_projects.py`. To change skills layers/tools, edit `LAYERS` in `scripts/generate_skills.py` (icons live in `scripts/skill_icons.json`).
+GitHub `schedule` is **best-effort**: under load, runs can be delayed or dropped (especially near `:00`). The cron uses minute `41` to reduce that. If a run fails with “job was not acquired by Runner” / internal server error, that is a GitHub infra blip — re-run from Actions → **Refresh profile assets** → **Run workflow**.
 
-## Enable private repo counts (recommended)
+### Rate limits (hourly is fine)
 
-Default `GITHUB_TOKEN` inside Actions **cannot** list your private repositories.
+Authenticated PAT budget is roughly **5,000 REST requests/hour** and **5,000 GraphQL points/hour**.
 
-1. Create a Personal Access Token:
-   - Classic: enable `repo` (and `read:user` if available)
-   - Fine-grained: resource owner = you, repository access = **All repositories**, permissions → **Contents: Read**, **Metadata: Read**
-2. Repo → **Settings → Secrets and variables → Actions → New repository secret**
-3. Name: `PROFILE_TOKEN`  
-   Value: the token
-4. Actions → **Update profile stats** → **Run workflow**
+One full refresh uses on the order of **~20–40 API calls** (repo list, languages per repo, a couple GraphQL contribution queries, Platane/snk). That is well under 1% of the hourly budget, even with snake every hour.
 
-After that, the SVG and table show real `x public · y private`.
+## Secrets
 
-The same `PROFILE_TOKEN` is required for the contribution snake: without it, Platane/snk only sees public contribution days and the grid looks almost empty compared to your GitHub profile calendar. Also keep **Settings → Profile → Contributions & activity → Include private contributions on my profile** enabled if you want private days on the graph.
+Default `GITHUB_TOKEN` **cannot** list your private repositories or private contribution days.
 
-## Manual trigger
+1. Fine-grained PAT (recommended): resource owner = you, **All repositories**, **Contents: Read**, **Metadata: Read**, optional Account **Events: Read**
+2. Repo → **Settings → Secrets and variables → Actions**
+3. Secret name: `PROFILE_TOKEN`
+4. Actions → **Refresh profile assets** → **Run workflow**
 
-GitHub → Actions → pick workflow → **Run workflow**.
+Keep **Settings → Profile → Contributions & activity → Include private contributions on my profile** enabled if you want private days on the public graph / snake.
 
-Locally (optional):
+## Editing content
+
+| What | Where |
+| --- | --- |
+| Project descriptions / stacks | `CURATED` in `scripts/generate_projects.py` |
+| Skills layers | `LAYERS` in `scripts/generate_skills.py` (+ `scripts/skill_icons.json`) |
+| Connect links / email | `CHANNELS` in `scripts/generate_connect.py` |
+| About fields | `FIELDS` in `scripts/generate_about.py` |
+
+After changing a generator script, either push (workflow auto-runs on those paths) or run **Refresh profile assets** manually. Do not hand-edit `generated/*.svg` for values that scripts overwrite.
+
+## Local run
 
 ```bash
 python scripts/generate_stats.py
@@ -48,14 +54,8 @@ python scripts/generate_connect.py
 python scripts/generate_about.py
 ```
 
-With private visibility:
-
-```bash
-# PowerShell
-$env:PROFILE_TOKEN = "ghp_..."
+```powershell
+$env:PROFILE_TOKEN = "github_pat_..."
 python scripts/generate_stats.py
 python scripts/generate_projects.py
-python scripts/generate_skills.py
-python scripts/generate_connect.py
-python scripts/generate_about.py
 ```

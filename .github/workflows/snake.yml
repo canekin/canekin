@@ -1,17 +1,11 @@
+# Kept as a thin manual trigger. Scheduled refresh lives in stats.yml (hourly, includes snake).
 name: Generate contribution snake
 
 on:
-  schedule:
-    - cron: "23 1 * * *"
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/snake.yml"
-      - "scripts/frame_snake.py"
 
 concurrency:
-  group: profile-snake
+  group: profile-assets
   cancel-in-progress: true
 
 permissions:
@@ -20,16 +14,17 @@ permissions:
 jobs:
   snake:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Generate snake SVG (github-dark)
         uses: Platane/snk@v3
         with:
           github_user_name: canekin
-          # PROFILE_TOKEN sees the same public+private calendar as the profile graph.
-          # Default GITHUB_TOKEN only returns public contribution days → sparse snake.
           github_token: ${{ secrets.PROFILE_TOKEN || github.token }}
           outputs: |
             generated/github-snake-dark.svg?palette=github-dark
@@ -48,6 +43,7 @@ jobs:
 
       - name: Commit if changed
         run: |
+          set -e
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add generated/github-snake-dark.svg
@@ -56,5 +52,14 @@ jobs:
             exit 0
           fi
           git commit -m "chore: refresh contribution snake"
-          git pull --rebase origin main
-          git push
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase origin main
+            if git push; then
+              echo "Pushed on attempt ${attempt}"
+              exit 0
+            fi
+            echo "Push failed (attempt ${attempt}), retrying..."
+            sleep $((attempt * 5))
+          done
+          echo "Push failed after retries"
+          exit 1
